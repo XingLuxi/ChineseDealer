@@ -22,9 +22,6 @@ DIR = "E:\PyProject\CorpusDealer\data"
 FILE_NAME = ""
 FILE_PATH = os.path.join(DIR, FILE_NAME)
 
-FILE_OUT_NAME = "train.zh.seg"
-FILE_OUT_PATH = os.path.join(DIR, FILE_OUT_NAME)
-
 _WORD_SPILT = re.compile(b"([.,!?\";:)(：；。，！？‘’“”])")
 _DIGIT_RE = re.compile(br"\d")
 _SPECIAL_PUN = re.compile(b"\.\.")
@@ -54,7 +51,8 @@ def zh_char_tokenizer(sentence):
 		# print(each_seg)
 		if bool(_DIGIT_RE.search(each_seg)):
 			# words_out.append(each_seg)
-			split_num_char = ["".join(list(g)) for k,g in groupby(each_seg, key=lambda x: x.isdigit())]
+			split_num_char = ["".join(list(g)) for k,g in groupby(each_seg, key=lambda x: x.isdigit() or (x==".") or (x==":"))]
+			# 
 			words_out.extend(split_num_char)
 		elif bool(_SPECIAL_PUN.search(each_seg)):
 			words_out.append(each_seg)
@@ -77,9 +75,17 @@ def dealer(raw_file_path, out_file_path):
 			count += 1
 			print("line %d done!" % count)
 
-if __name__ == "__main__":
-	file_in = os.path.join("E:\PyProject\CorpusDealer\data","train.zh")
-	start_time = time.time()
+def main(args):
+	file_in = os.path.join("E:\PyProject\CorpusDealer\data", str(args[0]))
+	FILE_OUT_NAME = str(args[1])
+	FILE_OUT_PATH = os.path.join(DIR, FILE_OUT_NAME)
+	print(args[0])
+	print(args[1])
 	dealer(file_in, FILE_OUT_PATH)
+	return
+
+if __name__ == "__main__":
+	start_time = time.time()
+	main(sys.argv[1:])
 	end_time = time.time() - start_time
 	print("using time: %0.3f sec." % end_time)
